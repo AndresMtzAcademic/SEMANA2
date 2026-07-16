@@ -1,0 +1,1131 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cápsula Educativa Interactiva: Puntuación y Vicios del Lenguaje</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Inter & Playfair Display -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Canvas Confetti for Gamification -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f0f7ff',
+                            100: '#e0effe',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                            900: '#1e3a8a',
+                        },
+                        emerald: {
+                            500: '#10b981',
+                            600: '#059669',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex flex-col antialiased">
+
+    <!-- Header / Nav -->
+    <header class="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-slate-200 shadow-sm transition-all">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <!-- Logo / Brand -->
+                <div class="flex items-center space-x-3">
+                    <div class="bg-brand-600 text-white p-2 rounded-xl shadow-md shadow-brand-500/20">
+                        <i class="fa-solid fa-graduation-cap text-lg"></i>
+                    </div>
+                    <div>
+                        <span class="font-bold text-slate-900 tracking-tight block text-sm sm:text-base">Comprensión Lectora</span>
+                        <span class="text-xs text-brand-600 font-semibold uppercase tracking-wider block -mt-1">Cápsula Digital</span>
+                    </div>
+                </div>
+
+                <!-- Navigation Tabs (Desktop) -->
+                <nav class="hidden md:flex space-x-1 lg:space-x-2">
+                    <button onclick="switchTab('intro')" id="tab-intro" class="tab-btn px-3 py-2 rounded-lg text-sm font-medium transition-all text-brand-600 bg-brand-50">
+                        <i class="fa-solid fa-house mr-1.5"></i> Inicio
+                    </button>
+                    <button onclick="switchTab('puntuacion')" id="tab-puntuacion" class="tab-btn px-3 py-2 rounded-lg text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-all">
+                        <i class="fa-solid fa-pen-nib mr-1.5"></i> I.2 Puntuación
+                    </button>
+                    <button onclick="switchTab('vicios')" id="tab-vicios" class="tab-btn px-3 py-2 rounded-lg text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-all">
+                        <i class="fa-solid fa-triangle-exclamation mr-1.5"></i> I.3 Vicios del Lenguaje
+                    </button>
+                    <button onclick="switchTab('autoevaluacion')" id="tab-autoevaluacion" class="tab-btn px-3 py-2 rounded-lg text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-all">
+                        <i class="fa-solid fa-award mr-1.5"></i> Actividad Final
+                    </button>
+                    <button onclick="switchTab('docente')" id="tab-docente" class="tab-btn px-3 py-2 rounded-lg text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-all">
+                        <i class="fa-solid fa-chalkboard-user mr-1.5"></i> Docentes
+                    </button>
+                </nav>
+
+                <!-- Gamified Global Progress Widget -->
+                <div class="flex items-center space-x-3 bg-slate-100/80 px-3 py-1.5 rounded-full border border-slate-200">
+                    <div class="text-xs font-semibold text-slate-500 hidden sm:block">Progreso:</div>
+                    <div class="w-16 sm:w-24 bg-slate-200 rounded-full h-2">
+                        <div id="global-progress-bar" class="bg-brand-600 h-2 rounded-full transition-all duration-500" style="width: 5%"></div>
+                    </div>
+                    <span id="global-progress-text" class="text-xs font-bold text-brand-700">5%</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Bottom Navigation for Mobile -->
+    <nav class="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 shadow-lg z-50 flex justify-around py-2">
+        <button onclick="switchTab('intro')" id="m-tab-intro" class="flex flex-col items-center justify-center text-xs font-medium text-brand-600">
+            <i class="fa-solid fa-house text-lg"></i>
+            <span>Inicio</span>
+        </button>
+        <button onclick="switchTab('puntuacion')" id="m-tab-puntuacion" class="flex flex-col items-center justify-center text-xs font-medium text-slate-500">
+            <i class="fa-solid fa-pen-nib text-lg"></i>
+            <span>Puntuación</span>
+        </button>
+        <button onclick="switchTab('vicios')" id="m-tab-vicios" class="flex flex-col items-center justify-center text-xs font-medium text-slate-500">
+            <i class="fa-solid fa-triangle-exclamation text-lg"></i>
+            <span>Vicios</span>
+        </button>
+        <button onclick="switchTab('autoevaluacion')" id="m-tab-autoevaluacion" class="flex flex-col items-center justify-center text-xs font-medium text-slate-500">
+            <i class="fa-solid fa-award text-lg"></i>
+            <span>Final</span>
+        </button>
+        <button onclick="switchTab('docente')" id="m-tab-docente" class="flex flex-col items-center justify-center text-xs font-medium text-slate-500">
+            <i class="fa-solid fa-chalkboard-user text-lg"></i>
+            <span>Docentes</span>
+        </button>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 mb-20 md:mb-8">
+
+        <!-- =================== SECCIÓN 1: INTRODUCCIÓN ATRACTIVA =================== -->
+        <section id="section-intro" class="tab-content block space-y-8">
+            <!-- Hero Hook Banner -->
+            <div class="relative bg-gradient-to-br from-brand-900 to-indigo-950 text-white rounded-3xl overflow-hidden shadow-xl shadow-brand-950/10 p-8 sm:p-12 lg:p-16">
+                <div class="absolute inset-0 opacity-10 bg-[radial-gradient(#e2e8f0_1px,transparent_1px)] [background-size:16px_16px]"></div>
+                <div class="relative z-10 max-w-3xl">
+                    <span class="bg-brand-500/20 text-brand-300 text-xs font-bold uppercase tracking-widest px-3 py-1.5 rounded-full border border-brand-500/30">
+                        🎓 Nivel Universitario - Inducción
+                    </span>
+                    <h1 class="text-3xl sm:text-4xl lg:text-5xl font-serif font-bold mt-6 leading-tight">
+                        ¿Puede una sola coma cambiar tu destino universitario?
+                    </h1>
+                    <p class="text-slate-300 mt-4 text-base sm:text-lg leading-relaxed">
+                        Imagina enviar un correo de apelación a tu beca: <br class="hidden sm:inline">
+                        <span class="italic text-amber-300 font-semibold">"No, queremos perder el beneficio"</span> vs. <span class="italic text-emerald-400 font-semibold">"No queremos perder el beneficio"</span>. 
+                        Un solo signo define el rumbo. En la universidad, escribir con precisión no es una regla tediosa; es la armadura de tus ideas.
+                    </p>
+                    <div class="mt-8 flex flex-wrap gap-4">
+                        <button onclick="switchTab('puntuacion')" class="bg-brand-600 hover:bg-brand-500 text-white font-semibold px-6 py-3 rounded-xl transition-all shadow-lg shadow-brand-600/30 flex items-center">
+                            Iniciar Misión <i class="fa-solid fa-arrow-right ml-2 text-sm"></i>
+                        </button>
+                        <a href="#quick-guide" class="bg-white/10 hover:bg-white/20 text-white font-semibold px-6 py-3 rounded-xl transition-all border border-white/20 flex items-center">
+                            Saber más <i class="fa-solid fa-chevron-down ml-2 text-sm"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pedagogy Objectives Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex items-start space-x-4">
+                    <div class="bg-brand-100 text-brand-600 p-3 rounded-xl shrink-0">
+                        <i class="fa-solid fa-crosshairs text-xl"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-slate-900 text-base">Meta 1: El Arte del Ritmo</h3>
+                        <p class="text-slate-500 text-sm mt-1">Gobernarás la respiración de tus textos estructurando ideas con los 7 signos clave de puntuación.</p>
+                    </div>
+                </div>
+                <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex items-start space-x-4">
+                    <div class="bg-emerald-100 text-emerald-600 p-3 rounded-xl shrink-0">
+                        <i class="fa-solid fa-shield-halved text-xl"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-slate-900 text-base">Meta 2: Escudo Antivicios</h3>
+                        <p class="text-slate-500 text-sm mt-1">Identificarás y depurarás redundancias, pleonasmos y vicios que restan autoridad a tu voz académica.</p>
+                    </div>
+                </div>
+                <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex items-start space-x-4">
+                    <div class="bg-indigo-100 text-indigo-600 p-3 rounded-xl shrink-0">
+                        <i class="fa-solid fa-feather text-xl"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-slate-900 text-base">Meta 3: Cohesión de Impacto</h3>
+                        <p class="text-slate-500 text-sm mt-1">Crearás argumentos convincentes con una estructura técnica impecable que exige el entorno universitario.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Nav map / Route -->
+            <div id="quick-guide" class="bg-white rounded-2xl border border-slate-200 p-6 sm:p-8 shadow-sm">
+                <h2 class="text-2xl font-serif font-bold text-slate-900 mb-2">Tu Ruta de Aprendizaje (240 mins)</h2>
+                <p class="text-slate-500 text-sm mb-6">Completa los hitos secuenciales y gana insignias para convertirte en un Maestro de la Retórica.</p>
+                <div class="relative">
+                    <div class="absolute left-4 top-2 bottom-2 w-0.5 bg-slate-200 hidden sm:block"></div>
+                    <div class="space-y-6 sm:space-y-4">
+                        <div class="flex flex-col sm:flex-row items-start sm:items-center relative pl-0 sm:pl-10">
+                            <div class="hidden sm:flex absolute left-0 w-8 h-8 rounded-full bg-brand-600 text-white items-center justify-center font-bold text-sm">1</div>
+                            <div class="flex-grow">
+                                <h4 class="font-bold text-slate-900 text-base flex items-center">
+                                    Módulo I.2: La Caja de Herramientas del Escritor (Puntuación) 
+                                    <span class="ml-2 bg-brand-100 text-brand-700 text-xs px-2.5 py-0.5 rounded-full font-medium">90 min</span>
+                                </h4>
+                                <p class="text-slate-500 text-sm">Explora las 7 herramientas y pruébalas en nuestro simulador en tiempo real.</p>
+                            </div>
+                        </div>
+                        <div class="flex flex-col sm:flex-row items-start sm:items-center relative pl-0 sm:pl-10">
+                            <div class="hidden sm:flex absolute left-0 w-8 h-8 rounded-full bg-slate-200 text-slate-600 items-center justify-center font-bold text-sm">2</div>
+                            <div class="flex-grow">
+                                <h4 class="font-bold text-slate-900 text-base flex items-center">
+                                    Módulo I.3: El Detector de Anomalías Idiomáticas 
+                                    <span class="ml-2 bg-emerald-100 text-emerald-700 text-xs px-2.5 py-0.5 rounded-full font-medium">60 min</span>
+                                </h4>
+                                <p class="text-slate-500 text-sm">Conviértete en detective y limpia textos académicos de "vicios del lenguaje".</p>
+                            </div>
+                        </div>
+                        <div class="flex flex-col sm:flex-row items-start sm:items-center relative pl-0 sm:pl-10">
+                            <div class="hidden sm:flex absolute left-0 w-8 h-8 rounded-full bg-slate-200 text-slate-600 items-center justify-center font-bold text-sm">3</div>
+                            <div class="flex-grow">
+                                <h4 class="font-bold text-slate-900 text-base flex items-center">
+                                    Evaluación Formativa Integradora 
+                                    <span class="ml-2 bg-amber-100 text-amber-700 text-xs px-2.5 py-0.5 rounded-full font-medium">90 min</span>
+                                </h4>
+                                <p class="text-slate-500 text-sm">Elige tu reto de producción escrita u oral y evalúate con la rúbrica interactiva.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- =================== SECCIÓN 2: PUNTUACIÓN (I.2) =================== -->
+        <section id="section-puntuacion" class="tab-content hidden space-y-8">
+            <div class="flex flex-col lg:flex-row gap-8">
+                <!-- Theoretical Explorator (Accordion/Tabs) -->
+                <div class="w-full lg:w-1/2 space-y-4">
+                    <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+                        <span class="text-xs font-bold text-brand-600 tracking-wider uppercase">Parte I</span>
+                        <h2 class="text-2xl font-serif font-bold text-slate-900 mt-1 mb-3">La Caja de Herramientas Gramaticales</h2>
+                        <p class="text-slate-500 text-sm">Haz clic en cada signo para dominar su uso técnico con ejemplos contextualizados de nivel superior.</p>
+                    </div>
+
+                    <!-- Punctuation Accordion Cards -->
+                    <div class="space-y-3">
+                        <!-- Coma -->
+                        <div class="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm transition-all duration-300">
+                            <button onclick="toggleAccordion('acc-coma')" class="w-full flex items-center justify-between p-4 bg-slate-50 hover:bg-slate-100/50 text-left">
+                                <div class="flex items-center space-x-3">
+                                    <span class="text-2xl font-bold text-brand-600 w-8 text-center">,</span>
+                                    <div>
+                                        <h4 class="font-bold text-slate-900 text-sm sm:text-base">1.2.1 La Coma (El Pulmón del Texto)</h4>
+                                        <p class="text-xs text-slate-500">Pausa breve, vocativos, enumeraciones e incisos explicativos.</p>
+                                    </div>
+                                </div>
+                                <i id="icon-acc-coma" class="fa-solid fa-chevron-down text-slate-400 transition-transform"></i>
+                            </button>
+                            <div id="acc-coma" class="hidden p-5 border-t border-slate-100 bg-white text-sm space-y-3">
+                                <p class="text-slate-600"><strong>Uso Académico Clave:</strong> No cometas el error de separar el sujeto del verbo mediante una coma (la coma asesina).</p>
+                                <div class="bg-amber-50 p-3 rounded-lg border-l-4 border-amber-500 text-xs">
+                                    <span class="font-bold text-amber-800">❌ Incorrecto:</span> El Rector de la Universidad, firmó el decreto de becas. <br>
+                                    <span class="font-bold text-emerald-800">✔ Correcto:</span> El Rector de la Universidad firmó el decreto de becas.
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Punto y coma -->
+                        <div class="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm transition-all duration-300">
+                            <button onclick="toggleAccordion('acc-puntocoma')" class="w-full flex items-center justify-between p-4 bg-slate-50 hover:bg-slate-100/50 text-left">
+                                <div class="flex items-center space-x-3">
+                                    <span class="text-2xl font-bold text-brand-600 w-8 text-center">;</span>
+                                    <div>
+                                        <h4 class="font-bold text-slate-900 text-sm sm:text-base">1.2.2 Punto y coma (El Eslabón Lógico)</h4>
+                                        <p class="text-xs text-slate-500">Une proposiciones con estrecha relación causa-efecto.</p>
+                                    </div>
+                                </div>
+                                <i id="icon-acc-puntocoma" class="fa-solid fa-chevron-down text-slate-400 transition-transform"></i>
+                            </button>
+                            <div id="acc-puntocoma" class="hidden p-5 border-t border-slate-100 bg-white text-sm space-y-3">
+                                <p class="text-slate-600"><strong>Uso Académico Clave:</strong> Ideal para separar enunciados complejos que ya contienen comas o antes de conectores discursivos (<em>sin embargo, por lo tanto, no obstante</em>) en frases largas.</p>
+                                <div class="bg-brand-50 p-3 rounded-lg border-l-4 border-brand-500 text-xs">
+                                    <span class="font-bold text-slate-700">Ejemplo:</span> El primer grupo de investigación analizó las variables cuantitativas; el segundo, los factores cualitativos.
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Dos Puntos -->
+                        <div class="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm transition-all duration-300">
+                            <button onclick="toggleAccordion('acc-dospuntos')" class="w-full flex items-center justify-between p-4 bg-slate-50 hover:bg-slate-100/50 text-left">
+                                <div class="flex items-center space-x-3">
+                                    <span class="text-2xl font-bold text-brand-600 w-8 text-center">:</span>
+                                    <div>
+                                        <h4 class="font-bold text-slate-900 text-sm sm:text-base">1.2.3 Dos Puntos (El Portal de Anuncio)</h4>
+                                        <p class="text-xs text-slate-500">Detienen el discurso para llamar la atención sobre lo que sigue.</p>
+                                    </div>
+                                </div>
+                                <i id="icon-acc-dospuntos" class="fa-solid fa-chevron-down text-slate-400 transition-transform"></i>
+                            </button>
+                            <div id="acc-dospuntos" class="hidden p-5 border-t border-slate-100 bg-white text-sm space-y-3">
+                                <p class="text-slate-600"><strong>Uso Académico Clave:</strong> Introducción de citas textuales directas en formato APA, o antes de enumeraciones de carácter explicativo.</p>
+                                <div class="bg-brand-50 p-3 rounded-lg border-l-4 border-brand-500 text-xs">
+                                    <span class="font-bold text-slate-700">Ejemplo:</span> El artículo científico destaca el principal hallazgo: la tasa de retención estudiantil aumentó un 15%.
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- El punto -->
+                        <div class="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm transition-all duration-300">
+                            <button onclick="toggleAccordion('acc-punto')" class="w-full flex items-center justify-between p-4 bg-slate-50 hover:bg-slate-100/50 text-left">
+                                <div class="flex items-center space-x-3">
+                                    <span class="text-2xl font-bold text-brand-600 w-8 text-center">.</span>
+                                    <div>
+                                        <h4 class="font-bold text-slate-900 text-sm sm:text-base">1.2.4 El Punto (La Frontera del Pensamiento)</h4>
+                                        <p class="text-xs text-slate-500">Fin de oración (seguido), párrafo (aparte) o texto (final).</p>
+                                    </div>
+                                </div>
+                                <i id="icon-acc-punto" class="fa-solid fa-chevron-down text-slate-400 transition-transform"></i>
+                            </button>
+                            <div id="acc-punto" class="hidden p-5 border-t border-slate-100 bg-white text-sm space-y-3">
+                                <p class="text-slate-600"><strong>Uso Académico Clave:</strong> Un error muy común en estudiantes es escribir párrafos kilométricos de una sola oración. Usa el punto y seguido para separar ideas secundarias que sustentan tu idea principal.</p>
+                                <div class="bg-brand-50 p-3 rounded-lg border-l-4 border-brand-500 text-xs">
+                                    <span class="font-bold text-slate-700">Consejo:</span> Si tu oración tiene más de tres líneas, es momento de evaluar colocar un punto y seguido.
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Los puntos suspensivos -->
+                        <div class="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm transition-all duration-300">
+                            <button onclick="toggleAccordion('acc-suspensivos')" class="w-full flex items-center justify-between p-4 bg-slate-50 hover:bg-slate-100/50 text-left">
+                                <div class="flex items-center space-x-3">
+                                    <span class="text-2xl font-bold text-brand-600 w-8 text-center">...</span>
+                                    <div>
+                                        <h4 class="font-bold text-slate-900 text-sm sm:text-base">1.2.5 Puntos Suspensivos (El Elipsis)</h4>
+                                        <p class="text-xs text-slate-500">Dejan en duda, suspenso u omiten parte de un texto.</p>
+                                    </div>
+                                </div>
+                                <i id="icon-acc-suspensivos" class="fa-solid fa-chevron-down text-slate-400 transition-transform"></i>
+                            </button>
+                            <div id="acc-suspensivos" class="hidden p-5 border-t border-slate-100 bg-white text-sm space-y-3">
+                                <p class="text-slate-600"><strong>Uso Académico Clave:</strong> En la redacción de informes universitarios, su uso se limita casi por completo al uso de corchetes con puntos suspensivos <strong class="text-brand-600">[...]</strong> para indicar que has recortado una cita textual externa para hacerla más concisa.</p>
+                            </div>
+                        </div>
+
+                        <!-- Paréntesis y Guión -->
+                        <div class="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm transition-all duration-300">
+                            <button onclick="toggleAccordion('acc-parentesis')" class="w-full flex items-center justify-between p-4 bg-slate-50 hover:bg-slate-100/50 text-left">
+                                <div class="flex items-center space-x-3">
+                                    <span class="text-2xl font-bold text-brand-600 w-8 text-center">()</span>
+                                    <div>
+                                        <h4 class="font-bold text-slate-900 text-sm sm:text-base">1.2.6 y 1.2.7 Paréntesis y Raya / Guion</h4>
+                                        <p class="text-xs text-slate-500">Elementos aclaratorios, acotaciones y diálogos.</p>
+                                    </div>
+                                </div>
+                                <i id="icon-acc-parentesis" class="fa-solid fa-chevron-down text-slate-400 transition-transform"></i>
+                            </button>
+                            <div id="acc-parentesis" class="hidden p-5 border-t border-slate-100 bg-white text-sm space-y-3">
+                                <p class="text-slate-600"><strong>Paréntesis ():</strong> Se utilizan para encapsular datos técnicos, siglas, fechas o aclaraciones marginales.</p>
+                                <p class="text-slate-600"><strong>Raya (—) vs. Guion (-):</strong> La raya introduce incisos o diálogos independientes; el guion une palabras compuestas o divide líneas silábicas.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Gamified Lab: The Fixer -->
+                <div class="w-full lg:w-1/2 flex flex-col">
+                    <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm flex-grow flex flex-col">
+                        <div class="flex justify-between items-center mb-4">
+                            <div>
+                                <span class="bg-brand-100 text-brand-800 text-xs px-2.5 py-1 rounded-full font-bold uppercase">Actividad de Práctica</span>
+                                <h3 class="text-xl font-bold text-slate-900 mt-1">Laboratorio de Restauración Gramatical</h3>
+                            </div>
+                            <span id="puntuacion-streak" class="text-xs font-semibold text-amber-600 bg-amber-50 px-2 py-1 rounded-lg border border-amber-200">
+                                <i class="fa-solid fa-fire mr-1"></i>Racha: 0
+                            </span>
+                        </div>
+                        <p class="text-slate-500 text-sm mb-4">Un virus ha robado los signos de puntuación clave del siguiente fragmento académico. ¿Puedes restaurarlos seleccionando la opción correcta?</p>
+
+                        <!-- Code-like Editor Mockup -->
+                        <div class="bg-slate-950 rounded-xl p-5 font-mono text-xs sm:text-sm text-slate-200 shadow-inner flex-grow relative min-h-[160px] flex flex-col justify-between">
+                            <div id="puntuacion-exercise-text" class="leading-relaxed whitespace-pre-wrap">
+                                <!-- Dynamic exercise text goes here -->
+                            </div>
+                            <div class="border-t border-slate-800 pt-4 mt-4 flex justify-between items-center text-[11px] text-slate-400">
+                                <span>Status: Esperando corrección...</span>
+                                <span>UTF-8 Español</span>
+                            </div>
+                        </div>
+
+                        <!-- Interactive Options Grid -->
+                        <div class="mt-6 space-y-3">
+                            <span class="text-xs font-bold text-slate-500 block">Elige la opción que reestablece el orden lógico:</span>
+                            <div id="puntuacion-options" class="grid grid-cols-1 gap-2">
+                                <!-- Dynamic option buttons -->
+                            </div>
+                        </div>
+
+                        <!-- Feedback Box -->
+                        <div id="puntuacion-feedback" class="mt-4 p-4 rounded-xl hidden transition-all duration-300">
+                            <!-- Dynamic feedback goes here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- =================== SECCIÓN 3: VICIOS DE LENGUAJE (I.3) =================== -->
+        <section id="section-vicios" class="tab-content hidden space-y-8">
+            <div class="bg-gradient-to-r from-emerald-800 to-teal-900 text-white rounded-3xl p-6 sm:p-10 shadow-xl relative overflow-hidden">
+                <div class="absolute right-0 bottom-0 opacity-10 translate-x-10 translate-y-10 scale-150">
+                    <i class="fa-solid fa-magnifying-glass text-9xl"></i>
+                </div>
+                <div class="max-w-2xl">
+                    <span class="bg-emerald-500/20 text-emerald-300 text-xs font-bold uppercase tracking-widest px-3 py-1.5 rounded-full border border-emerald-500/30">
+                        🕵‍♂️ Simulador Clínico de Textos
+                    </span>
+                    <h2 class="text-2xl sm:text-4xl font-serif font-bold mt-4">Vicios del Lenguaje: El Enemigo Invisible</h2>
+                    <p class="text-emerald-100 text-sm sm:text-base mt-2 leading-relaxed">
+                        Los vicios del lenguaje son construcciones inapropiadas que rompen la coherencia o empobrecen el texto académico. Para erradicarlos, debes identificarlos primero.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Vices Encyclopedia and Clickable Game -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                <!-- Theoretical reference side -->
+                <div class="lg:col-span-4 bg-white p-6 rounded-2xl border border-slate-200 shadow-sm h-fit">
+                    <h3 class="text-lg font-bold text-slate-900 mb-4 flex items-center">
+                        <i class="fa-solid fa-book-open text-emerald-600 mr-2"></i>Glosa de Vicios Académicos
+                    </h3>
+                    <div class="space-y-4">
+                        <div class="p-3 bg-slate-50 rounded-xl">
+                            <span class="text-xs font-bold text-emerald-700 block">Dequeísmo / Queísmo</span>
+                            <p class="text-xs text-slate-600 mt-1">Uso indebido de la preposición "de" antes de "que" (o su omisión cuando es necesaria).</p>
+                        </div>
+                        <div class="p-3 bg-slate-50 rounded-xl">
+                            <span class="text-xs font-bold text-emerald-700 block">Redundancia o Pleonasmo</span>
+                            <p class="text-xs text-slate-600 mt-1">Repetición de conceptos obvios que no añaden información básica (e.g., "subir arriba").</p>
+                        </div>
+                        <div class="p-3 bg-slate-50 rounded-xl">
+                            <span class="text-xs font-bold text-emerald-700 block">Anfibología (Ambigüedad)</span>
+                            <p class="text-xs text-slate-600 mt-1">Frases con más de una interpretación por un ordenamiento sintáctico defectuoso.</p>
+                        </div>
+                        <div class="p-3 bg-slate-50 rounded-xl">
+                            <span class="text-xs font-bold text-emerald-700 block">Solecismo</span>
+                            <p class="text-xs text-slate-600 mt-1">Errores de concordancia de género, número o uso incorrecto de preposiciones.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Detective Interactive Workspace -->
+                <div class="lg:col-span-8 bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between">
+                    <div>
+                        <div class="flex justify-between items-start mb-4">
+                            <div>
+                                <span class="bg-emerald-100 text-emerald-800 text-xs px-2.5 py-1 rounded-full font-bold uppercase">Misión: Sanitizar Texto</span>
+                                <h3 class="text-xl font-bold text-slate-900 mt-1">El Escáner de Vicios del Lenguaje</h3>
+                            </div>
+                            <div class="text-right">
+                                <span id="vicios-score" class="text-xs font-bold bg-slate-100 text-slate-700 px-3 py-1.5 rounded-lg border border-slate-200">
+                                    Casos Limpios: 0/4
+                                </span>
+                            </div>
+                        </div>
+                        <p class="text-slate-500 text-sm mb-6">Lee el borrador de un ensayo escrito por un estudiante ficticio. Encuentra el fragmento resaltado en amarillo que contiene un vicio gramatical explícito y corrígelo.</p>
+
+                        <!-- Interactive Email/Draft Interface -->
+                        <div class="bg-amber-50/50 rounded-2xl border-2 border-amber-100 p-6 relative">
+                            <div class="absolute -top-3 left-6 bg-amber-200 text-amber-900 text-[10px] font-extrabold uppercase px-3 py-0.5 rounded-full">Borrador con Deficiencias</div>
+                            <div class="text-slate-700 text-sm sm:text-base leading-relaxed space-y-4">
+                                <p id="vice-paragraph-container">
+                                    <!-- Dynamic text insert -->
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Actions and Feedback block -->
+                    <div class="mt-8 pt-6 border-t border-slate-100">
+                        <div id="vice-interactive-panel" class="hidden space-y-4">
+                            <div class="bg-white p-4 rounded-xl border border-slate-200">
+                                <span class="text-xs font-extrabold text-slate-400 uppercase tracking-widest block mb-2">Alternativas de Corrección Académica:</span>
+                                <div id="vice-options-container" class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                    <!-- Options generated dynamically -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Feedback and Progress alert -->
+                        <div id="vice-general-feedback" class="mt-4 p-4 rounded-xl hidden text-sm font-medium"></div>
+
+                        <!-- Reset/Next button -->
+                        <div class="mt-4 flex justify-end">
+                            <button id="next-vice-btn" onclick="nextViceChallenge()" class="hidden bg-emerald-600 hover:bg-emerald-500 text-white font-semibold px-5 py-2.5 rounded-xl text-sm transition-all shadow-md">
+                                Siguiente Caso <i class="fa-solid fa-angles-right ml-2"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- =================== SECCIÓN 4: ACTIVIDAD INTEGRADORA FINAL =================== -->
+        <section id="section-autoevaluacion" class="tab-content hidden space-y-8">
+            <!-- Header activity -->
+            <div class="bg-white rounded-2xl border border-slate-200 p-6 sm:p-8 shadow-sm">
+                <span class="bg-indigo-100 text-indigo-800 text-xs px-2.5 py-1 rounded-full font-bold uppercase">Evaluación Auténtica</span>
+                <h2 class="text-3xl font-serif font-bold text-slate-900 mt-2">Actividad Integradora Final</h2>
+                <p class="text-slate-500 text-sm sm:text-base mt-2">
+                    Demuestra tu dominio técnico eligiendo uno de los siguientes tres formatos alternativos adaptados a distintos estilos de aprendizaje. Aplica todas las reglas de puntuación (I.2) y erradica los vicios del lenguaje (I.3).
+                </p>
+            </div>
+
+            <!-- Path Selector -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Option 1: Written essay -->
+                <div onclick="selectPath(1)" id="path-card-1" class="bg-white p-6 rounded-2xl border-2 border-slate-200 hover:border-brand-300 cursor-pointer transition-all shadow-sm flex flex-col justify-between h-full">
+                    <div>
+                        <div class="bg-indigo-50 text-indigo-600 w-12 h-12 rounded-xl flex items-center justify-center text-xl mb-4 font-bold">A</div>
+                        <h3 class="font-bold text-slate-900 text-lg">Enfoque Crítico Escrito</h3>
+                        <p class="text-slate-500 text-xs mt-2 leading-relaxed">Redacta una columna de opinión de entre 150 y 300 palabras sobre "La influencia de las redes sociales en el vocabulario académico universitario".</p>
+                    </div>
+                    <span class="text-xs font-semibold text-brand-600 mt-4 block">Elegir esta modalidad <i class="fa-solid fa-arrow-right ml-1"></i></span>
+                </div>
+
+                <!-- Option 2: Oral presentation -->
+                <div onclick="selectPath(2)" id="path-card-2" class="bg-white p-6 rounded-2xl border-2 border-slate-200 hover:border-brand-300 cursor-pointer transition-all shadow-sm flex flex-col justify-between h-full">
+                    <div>
+                        <div class="bg-indigo-50 text-indigo-600 w-12 h-12 rounded-xl flex items-center justify-center text-xl mb-4 font-bold">B</div>
+                        <h3 class="font-bold text-slate-900 text-lg">Discurso Oral Digital</h3>
+                        <p class="text-slate-500 text-xs mt-2 leading-relaxed">Graba un video explicativo o podcast corto (3-5 minutos) defendiendo una postura académica sobre los desafíos ambientales de tu región geográfica.</p>
+                    </div>
+                    <span class="text-xs font-semibold text-brand-600 mt-4 block">Elegir esta modalidad <i class="fa-solid fa-arrow-right ml-1"></i></span>
+                </div>
+
+                <!-- Option 3: Practical Analysis Case -->
+                <div onclick="selectPath(3)" id="path-card-3" class="bg-white p-6 rounded-2xl border-2 border-slate-200 hover:border-brand-300 cursor-pointer transition-all shadow-sm flex flex-col justify-between h-full">
+                    <div>
+                        <div class="bg-indigo-50 text-indigo-600 w-12 h-12 rounded-xl flex items-center justify-center text-xl mb-4 font-bold">C</div>
+                        <h3 class="font-bold text-slate-900 text-lg">Resolución de Casos</h3>
+                        <p class="text-slate-500 text-xs mt-2 leading-relaxed">Analiza y reescribe un fragmento legal/científico con severas fallas de sintaxis, puntuación y ambigüedades idiomáticas extremas.</p>
+                    </div>
+                    <span class="text-xs font-semibold text-brand-600 mt-4 block">Elegir esta modalidad <i class="fa-solid fa-arrow-right ml-1"></i></span>
+                </div>
+            </div>
+
+            <!-- Workspace & Interactive Rubric -->
+            <div id="integrator-workspace" class="hidden bg-white rounded-2xl border border-slate-200 p-6 sm:p-8 shadow-sm space-y-6">
+                <div class="border-b border-slate-200 pb-4">
+                    <h3 class="text-xl font-bold text-slate-900" id="selected-path-title">Workspace de Trabajo</h3>
+                    <p class="text-slate-500 text-xs mt-1">Usa esta área para estructurar tus ideas antes del envío formal a tu profesor en clase.</p>
+                </div>
+
+                <!-- Simulation Interactive Draft Box -->
+                <div class="space-y-2">
+                    <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider">Tu Borrador de Proyecto:</label>
+                    <textarea id="student-draft" rows="6" oninput="analyzeStudentDraft()" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-4 text-sm font-sans focus:outline-none focus:ring-2 focus:ring-brand-500 transition-all custom-scrollbar" placeholder="Escribe tu texto académico aquí..."></p></textarea>
+                    <div class="flex justify-between items-center text-xs text-slate-400">
+                        <span id="draft-word-count">Palabras: 0</span>
+                        <span id="draft-live-feedback" class="text-brand-600 font-semibold">Teclea para analizar en tiempo real...</span>
+                    </div>
+                </div>
+
+                <!-- Rubric Evaluator -->
+                <div class="bg-slate-50 p-6 rounded-2xl border border-slate-200 space-y-4">
+                    <h4 class="font-bold text-slate-900 text-sm flex items-center">
+                        <i class="fa-solid fa-square-check text-brand-600 mr-2"></i>Rúbrica de Autoevaluación Interactiva
+                    </h4>
+                    <p class="text-slate-500 text-xs">Haz clic en la descripción que mejor represente tu desempeño en este borrador para calcular tu nota estimada.</p>
+                    
+                    <div class="space-y-4 pt-2">
+                        <!-- Criterion 1: Punctuation -->
+                        <div class="bg-white p-4 rounded-xl border border-slate-200">
+                            <span class="text-xs font-bold text-slate-700 block mb-2">Criterio 1: Uso de Puntuación (Comas, Puntos, Puntos y coma, Dos puntos)</span>
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                                <button onclick="selectRubric(1, 1)" id="rubric-1-1" class="rubric-btn-1 border p-3 rounded-lg text-left text-xs hover:bg-slate-50 transition-all">
+                                    <span class="font-bold text-rose-600 block mb-1">Insuficiente (1 pt)</span>
+                                    Falta de comas obligatorias; oraciones eternas sin puntos. Textos confusos.
+                                </button>
+                                <button onclick="selectRubric(1, 2)" id="rubric-1-2" class="rubric-btn-1 border p-3 rounded-lg text-left text-xs hover:bg-slate-50 transition-all">
+                                    <span class="font-bold text-amber-600 block mb-1">Satisfactorio (3 pts)</span>
+                                    Usa comas y puntos de forma regular. Hay algún error menor de cohesión.
+                                </button>
+                                <button onclick="selectRubric(1, 3)" id="rubric-1-3" class="rubric-btn-1 border p-3 rounded-lg text-left text-xs hover:bg-slate-50 transition-all">
+                                    <span class="font-bold text-emerald-600 block mb-1">Sobresaliente (5 pts)</span>
+                                    Puntuación estratégica impecable. Estructura balanceada de enunciados complejos.
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Criterion 2: Vices of Language -->
+                        <div class="bg-white p-4 rounded-xl border border-slate-200">
+                            <span class="text-xs font-bold text-slate-700 block mb-2">Criterio 2: Ausencia de Vicios del Lenguaje</span>
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                                <button onclick="selectRubric(2, 1)" id="rubric-2-1" class="rubric-btn-2 border p-3 rounded-lg text-left text-xs hover:bg-slate-50 transition-all">
+                                    <span class="font-bold text-rose-600 block mb-1">Insuficiente (1 pt)</span>
+                                    Múltiples deísmos, redundancias evidentes y ambigüedades de redacción.
+                                </button>
+                                <button onclick="selectRubric(2, 2)" id="rubric-2-2" class="rubric-btn-2 border p-3 rounded-lg text-left text-xs hover:bg-slate-50 transition-all">
+                                    <span class="font-bold text-amber-600 block mb-1">Satisfactorio (3 pts)</span>
+                                    El vocabulario es pertinente; persisten 1 o 2 vicios sutiles de concordancia.
+                                </button>
+                                <button onclick="selectRubric(2, 3)" id="rubric-2-3" class="rubric-btn-2 border p-3 rounded-lg text-left text-xs hover:bg-slate-50 transition-all">
+                                    <span class="font-bold text-emerald-600 block mb-1">Sobresaliente (5 pts)</span>
+                                    Texto completamente depurado de vicios gramaticales o pleonasmos.
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Total Score Simulator -->
+                    <div class="pt-4 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-4">
+                        <div class="text-center sm:text-left">
+                            <span class="text-xs text-slate-500 font-semibold block">Nota estimada autoevaluada:</span>
+                            <span id="rubric-total-text" class="text-2xl font-black text-slate-900">2 / 10 puntos</span>
+                        </div>
+                        <button onclick="submitFinalWork()" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold px-6 py-3 rounded-xl transition-all shadow-md flex items-center">
+                            <i class="fa-solid fa-cloud-arrow-up mr-2"></i> Confirmar Proyecto Integrador
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- =================== SECCIÓN 5: HERRAMIENTAS DE EVALUACIÓN DOCENTE =================== -->
+        <section id="section-docente" class="tab-content hidden space-y-8">
+            <div class="bg-slate-900 text-white p-8 rounded-3xl border border-slate-800 shadow-xl relative overflow-hidden">
+                <div class="absolute inset-0 opacity-10 bg-[linear-gradient(to_right,#808080_1px,transparent_1px),linear-gradient(to_bottom,#808080_1px,transparent_1px)] bg-[size:24px_24px]"></div>
+                <div class="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+                    <div>
+                        <span class="bg-brand-500/20 text-brand-300 text-xs font-bold uppercase tracking-widest px-3 py-1.5 rounded-full border border-brand-500/30">
+                            🛠 Panel Didáctico Universitario
+                        </span>
+                        <h2 class="text-3xl font-serif font-bold mt-4">Área de Seguimiento Docente</h2>
+                        <p class="text-slate-400 text-sm mt-2 max-w-xl">
+                            Herramientas de evaluación formativa y sumativa en tiempo real. Monitorea los indicadores del aula digital.
+                        </p>
+                    </div>
+                    <div class="bg-white/5 border border-white/10 rounded-2xl p-4 shrink-0 text-center">
+                        <span class="text-slate-400 text-xs block font-semibold uppercase">ID del Aula Virtual</span>
+                        <span class="text-amber-400 font-mono text-lg font-bold tracking-widest">COM-L-2026</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                <!-- Live progress tracking mockup -->
+                <div class="lg:col-span-8 bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-6">
+                    <div class="flex justify-between items-center pb-4 border-b border-slate-100">
+                        <div>
+                            <h3 class="font-bold text-slate-900 text-lg">Evaluación Formativa: Monitoreo Grupal</h3>
+                            <p class="text-slate-500 text-xs mt-0.5">Reporte simulado de progreso en tiempo real de tu grupo de alumnos.</p>
+                        </div>
+                        <span class="bg-emerald-100 text-emerald-800 text-xs px-2.5 py-1 rounded-full font-bold">Activo</span>
+                    </div>
+
+                    <!-- Interactive Progress Student Table Mock -->
+                    <div class="overflow-x-auto custom-scrollbar">
+                        <table class="w-full text-left border-collapse text-xs">
+                            <thead>
+                                <tr class="border-b border-slate-100 text-slate-400 font-bold uppercase">
+                                    <th class="py-3 px-2">Estudiante</th>
+                                    <th class="py-3 px-2">Progreso</th>
+                                    <th class="py-3 px-2">Errores Comunes Detectados</th>
+                                    <th class="py-3 px-2">Autoevaluación</th>
+                                    <th class="py-3 px-2 text-right">Estatus</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-50 text-slate-700 font-medium">
+                                <tr class="hover:bg-slate-50 transition-colors">
+                                    <td class="py-3 px-2 flex items-center space-x-2">
+                                        <div class="w-7 h-7 bg-indigo-100 text-indigo-700 font-extrabold rounded-full flex items-center justify-center">AM</div>
+                                        <span>Alba Martínez</span>
+                                    </td>
+                                    <td class="py-3 px-2">
+                                        <div class="w-20 bg-slate-100 rounded-full h-1.5">
+                                            <div class="bg-brand-600 h-1.5 rounded-full" style="width: 100%"></div>
+                                        </div>
+                                    </td>
+                                    <td class="py-3 px-2 text-slate-500">Solecismo (x2)</td>
+                                    <td class="py-3 px-2 font-bold text-emerald-600">10 / 10</td>
+                                    <td class="py-3 px-2 text-right">
+                                        <span class="bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full text-[10px] font-bold">Completado</span>
+                                    </td>
+                                </tr>
+                                <tr class="hover:bg-slate-50 transition-colors">
+                                    <td class="py-3 px-2 flex items-center space-x-2">
+                                        <div class="w-7 h-7 bg-brand-100 text-brand-700 font-extrabold rounded-full flex items-center justify-center">JG</div>
+                                        <span>Jorge Guerra</span>
+                                    </td>
+                                    <td class="py-3 px-2">
+                                        <div class="w-20 bg-slate-100 rounded-full h-1.5">
+                                            <div class="bg-brand-600 h-1.5 rounded-full" style="width: 65%"></div>
+                                        </div>
+                                    </td>
+                                    <td class="py-3 px-2 text-slate-500">Coma asesina (x1)</td>
+                                    <td class="py-3 px-2 font-bold text-slate-400">---</td>
+                                    <td class="py-3 px-2 text-right">
+                                        <span class="bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full text-[10px] font-bold">En Progreso</span>
+                                    </td>
+                                </tr>
+                                <tr class="hover:bg-slate-50 transition-colors">
+                                    <td class="py-3 px-2 flex items-center space-x-2">
+                                        <div class="w-7 h-7 bg-amber-100 text-amber-700 font-extrabold rounded-full flex items-center justify-center">SC</div>
+                                        <span>Sofía Cruz</span>
+                                    </td>
+                                    <td class="py-3 px-2">
+                                        <div class="w-20 bg-slate-100 rounded-full h-1.5">
+                                            <div class="bg-brand-600 h-1.5 rounded-full" style="width: 10%"></div>
+                                        </div>
+                                    </td>
+                                    <td class="py-3 px-2 text-slate-500">Ninguno aún</td>
+                                    <td class="py-3 px-2 font-bold text-slate-400">---</td>
+                                    <td class="py-3 px-2 text-right">
+                                        <span class="bg-rose-100 text-rose-800 px-2 py-0.5 rounded-full text-[10px] font-bold">Inicio Incompleto</span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Pedagogical Indicators sidebar -->
+                <div class="lg:col-span-4 bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-6">
+                    <h3 class="font-bold text-slate-900 text-lg">Indicadores de Logro</h3>
+                    <div class="space-y-4">
+                        <div class="p-3 bg-slate-50 rounded-xl border border-slate-100">
+                            <span class="text-xs text-slate-400 font-bold block uppercase">Indicador Técnico A</span>
+                            <p class="text-xs text-slate-700 font-semibold mt-1">El estudiante reduce en un 80% las oraciones monótonas en sus ensayos mediante el uso de conectores y puntos coordinados.</p>
+                        </div>
+                        <div class="p-3 bg-slate-50 rounded-xl border border-slate-100">
+                            <span class="text-xs text-slate-400 font-bold block uppercase">Indicador Técnico B</span>
+                            <p class="text-xs text-slate-700 font-semibold mt-1">Identificación inmediata de por lo menos 3 vicios estructurales en borradores ajenos y su correspondiente reformulación académica.</p>
+                        </div>
+                        <div class="p-3 bg-slate-50 rounded-xl border border-slate-100">
+                            <span class="text-xs text-slate-400 font-bold block uppercase">Estilo de Evaluación</span>
+                            <p class="text-xs text-slate-700 font-semibold mt-1">Diseñado para soportar co-evaluaciones, auto-evaluación dirigida y portafolios didácticos.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-slate-200 py-6 mt-12 text-center text-xs text-slate-400">
+        <div class="max-w-7xl mx-auto px-4">
+            <p>© 2026 Cátedra Digital de Comprensión Lectora - Educación Superior.</p>
+            <p class="mt-1 text-[10px]">Diseñado bajo principios de gamificación interactiva y diseño universal de aprendizaje (DUA).</p>
+        </div>
+    </footer>
+
+    <!-- Custom JS for App Control & State Management -->
+    <script>
+        // --- Core Navigation States ---
+        let completedSteps = {
+            intro: true,
+            puntuacion: false,
+            vicios: false,
+            final: false
+        };
+
+        function updateGlobalProgress() {
+            let total = 4;
+            let current = 0;
+            if(completedSteps.intro) current += 1;
+            if(completedSteps.puntuacion) current += 1;
+            if(completedSteps.vicios) current += 1;
+            if(completedSteps.final) current += 1;
+
+            let percentage = Math.round((current / total) * 100);
+            
+            // Adjust visual bars
+            const bar = document.getElementById('global-progress-bar');
+            const text = document.getElementById('global-progress-text');
+            if (bar && text) {
+                bar.style.width = percentage + '%';
+                text.innerText = percentage + '%';
+            }
+        }
+
+        function switchTab(tabId) {
+            // Hide all tab content
+            document.querySelectorAll('.tab-content').forEach(el => {
+                el.classList.add('hidden');
+                el.classList.remove('block');
+            });
+
+            // Show active tab
+            const targetSection = document.getElementById('section-' + tabId);
+            if (targetSection) {
+                targetSection.classList.remove('hidden');
+                targetSection.classList.add('block');
+            }
+
+            // Manage styling for active tab button (Desktop & Mobile)
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('text-brand-600', 'bg-brand-50');
+                btn.classList.add('text-slate-600', 'hover:text-slate-900', 'hover:bg-slate-100');
+            });
+
+            const activeTabBtn = document.getElementById('tab-' + tabId);
+            if(activeTabBtn) {
+                activeTabBtn.classList.remove('text-slate-600', 'hover:text-slate-900', 'hover:bg-slate-100');
+                activeTabBtn.classList.add('text-brand-600', 'bg-brand-50');
+            }
+
+            // Scroll to top safely
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // --- ACCORDION SYSTEM FOR THEORETICAL MODULES ---
+        function toggleAccordion(id) {
+            const accordionContent = document.getElementById(id);
+            const accordionIcon = document.getElementById('icon-' + id);
+            
+            if (accordionContent) {
+                if (accordionContent.classList.contains('hidden')) {
+                    accordionContent.classList.remove('hidden');
+                    if (accordionIcon) accordionIcon.classList.add('rotate-180');
+                } else {
+                    accordionContent.classList.add('hidden');
+                    if (accordionIcon) accordionIcon.classList.remove('rotate-180');
+                }
+            }
+        }
+
+        // --- MODULE I.2: PUNCTUATION INTERACTIVE CHALLENGES ---
+        let punctuationExercises = [
+            {
+                text: "El estudio de campo fue revelador [___] los datos demostraron una correlación estrecha entre lectura crítica y éxito académico.",
+                answerKey: ";",
+                options: [
+                    { label: "Punto y coma (;)", value: ";", hint: "¡Correcto! Une proposiciones estrechamente coordinadas por una lógica de causa-efecto." },
+                    { label: "Coma (,)", value: ",", hint: "Incorrecto: Generarías una 'coma asesina' o un encabalgamiento inadecuado sin un nexo lógico." },
+                    { label: "Dos puntos (:)", value: ":", hint: "Casi adecuado, pero el punto y coma equilibra mejor el peso rítmico de ambas ideas completas." }
+                ]
+            },
+            {
+                text: "Los estudiantes que deseen postular a la beca deberán entregar [___] certificado de calificaciones, carta de motivos y portafolio de proyectos.",
+                answerKey: ":",
+                options: [
+                    { label: "Coma (,)", value: ",", hint: "Incorrecto: No se abre una enumeración directa con coma tras el verbo entregar." },
+                    { label: "Dos Puntos (:)", value: ":", hint: "¡Perfecto! Introduce y anuncia formalmente una lista estructurada de requisitos." },
+                    { label: "Puntos suspensivos (...)", value: "...", hint: "Incorrecto: Esto indicaría titubeo o corte abrupto inadecuado en textos administrativos." }
+                ]
+            }
+        ];
+
+        let currentPuncIdx = 0;
+        let punctuationStreak = 0;
+
+        function loadPunctuationExercise() {
+            const exercise = punctuationExercises[currentPuncIdx];
+            const textEl = document.getElementById('puntuacion-exercise-text');
+            const optionsContainer = document.getElementById('puntuacion-options');
+            const feedbackEl = document.getElementById('puntuacion-feedback');
+
+            if (!exercise || !textEl || !optionsContainer || !feedbackEl) return;
+
+            feedbackEl.classList.add('hidden');
+            textEl.innerHTML = exercise.text.replace("[___]", "<span class='text-amber-400 underline font-extrabold px-1'>[ ___ ]</span>");
+
+            // Build Options
+            optionsContainer.innerHTML = "";
+            exercise.options.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = "w-full text-left bg-slate-50 hover:bg-slate-100 border border-slate-200 hover:border-slate-300 p-3 rounded-xl text-xs sm:text-sm transition-all flex justify-between items-center";
+                btn.innerHTML = `<span>${opt.label}</span> <i class="fa-solid fa-chevron-right text-slate-300"></i>`;
+                btn.onclick = () => checkPunctuationAnswer(opt, exercise);
+                optionsContainer.appendChild(btn);
+            });
+        }
+
+        function checkPunctuationAnswer(option, exercise) {
+            const feedbackEl = document.getElementById('puntuacion-feedback');
+            if(!feedbackEl) return;
+
+            feedbackEl.classList.remove('hidden', 'bg-rose-50', 'text-rose-800', 'border-rose-200', 'bg-emerald-50', 'text-emerald-800', 'border-emerald-200');
+
+            if(option.value === exercise.answerKey) {
+                feedbackEl.classList.add('bg-emerald-50', 'text-emerald-800', 'border', 'border-emerald-200');
+                feedbackEl.innerHTML = `<p class="font-bold flex items-center"><i class="fa-solid fa-circle-check mr-2"></i> ${option.hint}</p>`;
+                punctuationStreak++;
+                document.getElementById('puntuacion-streak').innerHTML = `<i class="fa-solid fa-fire mr-1 text-orange-500 animate-bounce"></i>Racha: ${punctuationStreak}`;
+                
+                // Trigger celebratory confetti
+                confetti({
+                    particleCount: 50,
+                    spread: 60,
+                    origin: { y: 0.8 }
+                });
+
+                // Next challenge sequence after delay
+                setTimeout(() => {
+                    currentPuncIdx = (currentPuncIdx + 1) % punctuationExercises.length;
+                    completedSteps.puntuacion = true;
+                    updateGlobalProgress();
+                    loadPunctuationExercise();
+                }, 3000);
+            } else {
+                feedbackEl.classList.add('bg-rose-50', 'text-rose-800', 'border', 'border-rose-200');
+                feedbackEl.innerHTML = `<p class="font-bold flex items-center"><i class="fa-solid fa-triangle-exclamation mr-2"></i> ${option.hint}</p>`;
+                punctuationStreak = 0;
+                document.getElementById('puntuacion-streak').innerHTML = `<i class="fa-solid fa-fire mr-1"></i>Racha: 0`;
+            }
+        }
+
+        // --- STREAMING_CHUNK: Module I.3 Interactive Challenges ---
+        // --- MODULE I.3: LANGUAGE VICES DETECTIVE GAME ---
+        let viceChallenges = [
+            {
+                fullText: "El doctor recomendó un tratamiento alternativo. <span class='bg-amber-100 text-amber-950 font-bold px-1 rounded border border-amber-300 cursor-pointer hover:bg-amber-200 transition-all' onclick='triggerVicePanel(0)'>Nos dimos cuenta de que el paciente se encuentra muy mejor</span> de su enfermedad crónica gracias a las terapias aplicadas.",
+                correctOptionIdx: 1,
+                vicioExplicacion: "¡Encontraste el vicio! La frase tiene un solecismo comparativo ('muy mejor' es incorrecto; se debe usar 'mucho mejor').",
+                options: [
+                    { text: "Nos dimos de cuenta de que el paciente está más mejor...", code: "queismo-solecismo" },
+                    { text: "Observamos que el paciente se encuentra mucho mejor...", code: "correcto" },
+                    { text: "Se nota de que el enfermo está super mejor...", code: "queismo-coloquial" }
+                ]
+            },
+            {
+                fullText: "El coordinador académico anunció a la facultad de medicina que <span class='bg-amber-100 text-amber-950 font-bold px-1 rounded border border-amber-300 cursor-pointer hover:bg-amber-200 transition-all' onclick='triggerVicePanel(1)'>iba a subir arriba a entregar los reportes impresos</span> antes del cierre administrativo de esta tarde.",
+                correctOptionIdx: 2,
+                vicioExplicacion: "¡Correcto! Erradicaste el pleonasmo explícito ('subir arriba'). En textos académicos la sobriedad léxica es fundamental.",
+                options: [
+                    { text: "iba a ascender arriba a entregar...", code: "pleonasmo" },
+                    { text: "tenía que subir en dirección de arriba...", code: "redundancia" },
+                    { text: "subiría a entregar los reportes...", code: "correcto" }
+                ]
+            }
+        ];
+
+        let currentViceIdx = 0;
+        let vicesClearedCount = 0;
+
+        function loadViceChallenge() {
+            const container = document.getElementById('vice-paragraph-container');
+            const panel = document.getElementById('vice-interactive-panel');
+            const feedback = document.getElementById('vice-general-feedback');
+            const nextBtn = document.getElementById('next-vice-btn');
+
+            if(!container || !panel || !feedback || !nextBtn) return;
+
+            panel.classList.add('hidden');
+            feedback.classList.add('hidden');
+            nextBtn.classList.add('hidden');
+
+            const chal = viceChallenges[currentViceIdx];
+            container.innerHTML = chal.fullText;
+        }
+
+        function triggerVicePanel(index) {
+            const panel = document.getElementById('vice-interactive-panel');
+            const optionsContainer = document.getElementById('vice-options-container');
+            if(!panel || !optionsContainer) return;
+
+            panel.classList.remove('hidden');
+            optionsContainer.innerHTML = "";
+
+            const chal = viceChallenges[index];
+            chal.options.forEach((opt, idx) => {
+                const btn = document.createElement('button');
+                btn.className = "p-3 rounded-lg border text-xs text-left font-sans transition-all bg-slate-50 hover:bg-brand-50 hover:border-brand-300 text-slate-800";
+                btn.innerText = opt.text;
+                btn.onclick = () => checkViceAnswer(idx, chal);
+                optionsContainer.appendChild(btn);
+            });
+        }
+
+        function checkViceAnswer(idx, chal) {
+            const feedback = document.getElementById('vice-general-feedback');
+            const nextBtn = document.getElementById('next-vice-btn');
+            if(!feedback || !nextBtn) return;
+
+            feedback.classList.remove('hidden', 'bg-rose-50', 'text-rose-800', 'bg-emerald-50', 'text-emerald-800');
+
+            if(idx === chal.correctOptionIdx) {
+                feedback.classList.add('bg-emerald-50', 'text-emerald-800', 'p-4', 'rounded-xl', 'border', 'border-emerald-200');
+                feedback.innerHTML = `<div class='flex items-start'><i class="fa-solid fa-shield-cat text-lg mr-2 mt-0.5"></i> <div><strong>Excelente Análisis:</strong> ${chal.vicioExplicacion}</div></div>`;
+                vicesClearedCount++;
+                document.getElementById('vicios-score').innerText = `Casos Limpios: ${vicesClearedCount}/2`;
+                
+                confetti({
+                    particleCount: 40,
+                    spread: 50,
+                    origin: { y: 0.9 }
+                });
+
+                nextBtn.classList.remove('hidden');
+                completedSteps.vicios = true;
+                updateGlobalProgress();
+            } else {
+                feedback.classList.add('bg-rose-50', 'text-rose-800', 'p-4', 'rounded-xl', 'border', 'border-rose-200');
+                feedback.innerHTML = `<div class='flex items-start'><i class="fa-solid fa-face-frown text-lg mr-2 mt-0.5"></i> <div>Esa alternativa sigue conservando redundancias o vicios sintácticos. Prueba una alternativa más precisa y minimalista.</div></div>`;
+            }
+        }
+
+        function nextViceChallenge() {
+            currentViceIdx = (currentViceIdx + 1) % viceChallenges.length;
+            loadViceChallenge();
+        }
+
+        // --- STREAMING_CHUNK: Final Integrator Workspace Logic ---
+        // --- MODULE I.4: FINAL INTEGRATOR WORKSPACE AND RUBRIC ---
+        let rubricScores = {
+            criterion1: 1,
+            criterion2: 1
+        };
+
+        function selectPath(pathId) {
+            // Unselect all path cards visual indicators
+            document.querySelectorAll('[id^="path-card-"]').forEach(card => {
+                card.classList.remove('border-brand-500', 'bg-brand-50/20', 'ring-2', 'ring-brand-500/20');
+                card.classList.add('border-slate-200');
+            });
+
+            // Highlight selected card
+            const selectedCard = document.getElementById('path-card-' + pathId);
+            if (selectedCard) {
+                selectedCard.classList.remove('border-slate-200');
+                selectedCard.classList.add('border-brand-500', 'bg-brand-50/20', 'ring-2', 'ring-brand-500/20');
+            }
+
+            // Reveal Workspace area
+            const workspace = document.getElementById('integrator-workspace');
+            const pathTitle = document.getElementById('selected-path-title');
+            if (workspace && pathTitle) {
+                workspace.classList.remove('hidden');
+                
+                let titleText = "Espacio de Trabajo: Enfoque Crítico Escrito (A)";
+                if(pathId === 2) titleText = "Espacio de Trabajo: Discurso Oral Digital (B)";
+                if(pathId === 3) titleText = "Espacio de Trabajo: Resolución de Casos Prácticos (C)";
+                pathTitle.innerText = titleText;
+            }
+
+            // Smooth scroll down to interactive area
+            workspace.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function analyzeStudentDraft() {
+            const text = document.getElementById('student-draft').value;
+            const wordCountEl = document.getElementById('draft-word-count');
+            const liveFeedbackEl = document.getElementById('draft-live-feedback');
+
+            if(!wordCountEl || !liveFeedbackEl) return;
+
+            // Simple word counting
+            const words = text.trim() ? text.trim().split(/\s+/).length : 0;
+            wordCountEl.innerText = `Palabras: ${words}`;
+
+            // Smart feedback simulation
+            if(words === 0) {
+                liveFeedbackEl.innerText = "Teclea para analizar en tiempo real...";
+                liveFeedbackEl.className = "text-slate-400";
+            } else if(words < 50) {
+                liveFeedbackEl.innerText = "Sigue redactando. Recuerda usar comas e incisos.";
+                liveFeedbackEl.className = "text-amber-600 font-semibold";
+            } else {
+                // Heuristics for visual stimulation
+                let hasComas = text.includes(',');
+                let hasPuntos = text.includes('.');
+                if(hasComas && hasPuntos) {
+                    liveFeedbackEl.innerText = "¡Bien! Estás segmentando tu discurso con comas y puntos coordinados.";
+                    liveFeedbackEl.className = "text-emerald-600 font-semibold";
+                } else {
+                    liveFeedbackEl.innerText = "Sugerencia: Divide tus frases largas con puntos seguidos.";
+                    liveFeedbackEl.className = "text-amber-600 font-semibold";
+                }
+            }
+        }
+
+        function selectRubric(criterion, points) {
+            // Remove previous selections for that criterion
+            document.querySelectorAll(`.rubric-btn-${criterion}`).forEach(btn => {
+                btn.classList.remove('border-brand-500', 'bg-brand-50', 'ring-2', 'ring-brand-500/20');
+            });
+
+            // Get concrete button & select it
+            let optVal = (points === 1) ? 1 : (points === 2 ? 3 : 5);
+            let btnId = `rubric-${criterion}-${points}`;
+            const btn = document.getElementById(btnId);
+            if(btn) {
+                btn.classList.add('border-brand-500', 'bg-brand-50', 'ring-2', 'ring-brand-500/20');
+            }
+
+            if(criterion === 1) rubricScores.criterion1 = optVal;
+            if(criterion === 2) rubricScores.criterion2 = optVal;
+
+            calculateTotalRubricScore();
+        }
+
+        function calculateTotalRubricScore() {
+            let total = rubricScores.criterion1 + rubricScores.criterion2;
+            const totalText = document.getElementById('rubric-total-text');
+            if(totalText) {
+                totalText.innerText = `${total} / 10 puntos`;
+            }
+        }
+
+        function submitFinalWork() {
+            const draft = document.getElementById('student-draft').value;
+            if(!draft.trim()) {
+                alert("Por favor escribe tu borrador de proyecto en el cuadro de texto antes de confirmar tu entrega.");
+                return;
+            }
+
+            // Success confetti burst
+            confetti({
+                particleCount: 150,
+                spread: 80,
+                origin: { y: 0.6 }
+            });
+
+            completedSteps.final = true;
+            updateGlobalProgress();
+
+            alert("🎉 ¡Felicidades! Has completado tu autoevaluación y asegurado tu entrega de la cápsula educativa. Muestra esta pantalla a tu docente.");
+        }
+
+        // Window Init load
+        window.onload = function() {
+            loadPunctuationExercise();
+            loadViceChallenge();
+            updateGlobalProgress();
+        };
+    </script>
+</body>
+</html>
